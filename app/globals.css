@@ -37,7 +37,7 @@ body::before {
   pointer-events: none;
 }
 
-/* LayerZero-inspired custom styles */
+/* LayerZero-in custom styles */
 .layerzero-card {
   background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
   border: 1px solid rgba(59, 130, 246, 0.3);
