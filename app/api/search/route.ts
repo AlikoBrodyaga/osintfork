@@ -1,54 +1,64 @@
 import { type NextRequest, NextResponse } from "next/server"
 
-// Имитация функции для взаимодействия с Monad
-async function searchMonadOsint(query: string, limit: number, language: string) {
-  // В реальном приложении здесь будет запрос к Monad API
-  console.log(`Searching for "${query}" with limit ${limit} in ${language}`)
-
-  // Имитация задержки запроса
-  await new Promise((resolve) => setTimeout(resolve, 1500))
-
-  // Имитация результатов
-  return [
-    {
-      id: "1",
-      type: "email",
-      value: query.includes("@") ? query : `${query}@example.com`,
-      source: "Database leak",
-      date: "2023-05-15",
-    },
-    {
-      id: "2",
-      type: "phone",
-      value: query.match(/\d+/) ? query : "+7 999 123 4567",
-      source: "Public directory",
-      date: "2023-06-22",
-    },
-  ]
-}
+// Встроенный API токен - пользователи его не видят
+const API_TOKEN = "5592031950:NxR1cNdr"
 
 export async function POST(request: NextRequest) {
   try {
-    const { query, limit, language } = await request.json()
+    const body = await request.json()
+    const { request: query, limit = 100, lang = "ru", userAddress } = body
 
     if (!query) {
-      return NextResponse.json({ error: "Query is required" }, { status: 400 })
+      return NextResponse.json({ error: "Поисковый запрос обязателен" }, { status: 400 })
     }
 
-    // Проверка оплаты MON токенами (в реальном приложении)
-    // const paymentVerified = await verifyMonPayment(userId, 1)
-    // if (!paymentVerified) {
-    //   return NextResponse.json({ error: "Payment required" }, { status: 402 })
-    // }
+    // Логируем запрос для мониторинга
+    console.log(`🔍 Поисковый запрос от ${userAddress}: "${query}" (лимит: ${limit}, язык: ${lang})`)
 
-    const results = await searchMonadOsint(query, Number.parseInt(limit) || 100, language || "Russian")
-
-    return NextResponse.json({
-      success: true,
-      results,
+    // Делаем запрос к LeakOsint API с нашим встроенным токеном
+    const apiResponse = await fetch("https://leakosintapi.com/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        token: API_TOKEN,
+        request: query,
+        limit,
+        lang,
+        type: "json",
+      }),
     })
-  } catch (error) {
-    console.error("Search error:", error)
-    return NextResponse.json({ error: "Failed to perform search" }, { status: 500 })
+
+    if (!apiResponse.ok) {
+      const errorMessage = `LeakOsint API вернул статус ${apiResponse.status}`
+      console.error(`❌ Ошибка API: ${errorMessage}`)
+      throw new Error(errorMessage)
+    }
+
+    const data = await apiResponse.json()
+
+    // Проверяем на ошибки в ответе API
+    if (data["Error code"]) {
+      const errorMessage = `Ошибка LeakOsint API: ${data["Error code"]}`
+      console.error(`❌ Ошибка в ответе API: ${errorMessage}`)
+      return NextResponse.json({ error: errorMessage }, { status: 400 })
+    }
+
+    // Логируем успешный ответ
+    const resultCount = Object.keys(data.List || {}).length
+    console.log(`✅ Поиск успешен: Найдено ${resultCount} результатов в базах данных для пользователя ${userAddress}`)
+
+    return NextResponse.json(data)
+  } catch (error: any) {
+    console.error("Ошибка поиска:", error)
+
+    return NextResponse.json(
+      {
+        error: error.message || "Внутренняя ошибка сервера",
+        details: "Не удалось выполнить поисковый запрос",
+      },
+      { status: 500 },
+    )
   }
 }
