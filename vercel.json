@@ -2,7 +2,7 @@
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "devCommand": "npm run dev",
-  "installCommand": "npm ci --legacy-peer-deps",
+  "installCommand": "npm install",
   "functions": {
     "app/api/**/*.ts": {
       "maxDuration": 30
@@ -19,19 +19,6 @@
         {
           "key": "Content-Security-Policy",
           "value": "frame-ancestors *"
-        }
-      ]
-    },
-    {
-      "source": "/.well-known/(.*)",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "application/json"
-        },
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
         }
       ]
     }
