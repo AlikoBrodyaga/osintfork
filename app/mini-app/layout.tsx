@@ -6,10 +6,10 @@ export const metadata: Metadata = {
   description: "Web3 OSINT Search on Monad Testnet",
   other: {
     "fc:frame": "vNext",
-    "fc:frame:image": "https://your-domain.vercel.app/mini-app-preview.png",
+    "fc:frame:image": "https://monad-osint.vercel.app/mini-app-preview.png",
     "fc:frame:button:1": "Open OSINT Search",
     "fc:frame:button:1:action": "link",
-    "fc:frame:button:1:target": "https://your-domain.vercel.app/mini-app",
+    "fc:frame:button:1:target": "https://monad-osint.vercel.app/mini-app",
   },
 }
 
