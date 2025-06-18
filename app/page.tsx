@@ -12,7 +12,6 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Loader2, Wallet, Search, History, AlertCircle, CheckCircle, Bell, Shield } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { FarcasterIntegration } from "@/components/farcaster-integration"
 
 interface ApiResponse {
   List: Record<
@@ -56,29 +55,9 @@ export default function LeakSearchApp() {
   const [requestHistory, setRequestHistory] = useState<RequestHistory[]>([])
   const [currentTxHash, setCurrentTxHash] = useState<string | null>(null)
   const [notificationsEnabled, setNotificationsEnabled] = useState(true)
-  const [isFarcasterFrame, setIsFarcasterFrame] = useState(false)
   const { toast } = useToast()
 
   useEffect(() => {
-    // Проверяем, запущено ли приложение в контексте Farcaster
-    const checkFarcasterContext = () => {
-      if (typeof window !== "undefined") {
-        // Проверяем URL параметры или user agent для определения Farcaster контекста
-        const urlParams = new URLSearchParams(window.location.search)
-        const isFrame =
-          urlParams.has("farcaster") ||
-          window.location.pathname.includes("frame") ||
-          navigator.userAgent.includes("Farcaster")
-
-        setIsFarcasterFrame(isFrame)
-
-        // Если это Farcaster Frame, загружаем SDK
-        if (isFrame) {
-          loadFarcasterSDK()
-        }
-      }
-    }
-
     // Проверяем наличие MetaMask только в браузере
     if (typeof window !== "undefined" && window.ethereum) {
       console.log("✅ MetaMask обнаружен")
@@ -115,33 +94,8 @@ export default function LeakSearchApp() {
         console.error("Ошибка загрузки данных из localStorage:", error)
       }
     }
-
-    checkFarcasterContext()
   }, [])
 
-  const loadFarcasterSDK = () => {
-    if (typeof window !== "undefined" && !window.frameSDK) {
-      const script = document.createElement("script")
-      script.src = "https://cdn.jsdelivr.net/npm/@farcaster/frame-sdk/dist/index.min.js"
-      script.onload = () => {
-        // Проверяем, что SDK загрузился
-        if (window.frameSDK) {
-          try {
-            window.frameSDK.actions.ready()
-            console.log("✅ Farcaster Frame SDK загружен")
-          } catch (error) {
-            console.warn("⚠️ Ошибка инициализации Farcaster SDK:", error)
-          }
-        }
-      }
-      script.onerror = () => {
-        console.warn("⚠️ Не удалось загрузить Farcaster Frame SDK")
-      }
-      document.head.appendChild(script)
-    }
-  }
-
-  // Остальные функции остаются без изменений...
   const connectWallet = async () => {
     try {
       if (typeof window === "undefined") {
@@ -562,11 +516,6 @@ export default function LeakSearchApp() {
     })
   }
 
-  // Получаем данные для Farcaster интеграции
-  const getSearchResultsCount = () => {
-    return apiResponse ? Object.keys(apiResponse.List).length : 0
-  }
-
   return (
     <div className="min-h-screen text-white font-mono p-4">
       <div className="max-w-6xl mx-auto space-y-6">
@@ -576,7 +525,6 @@ export default function LeakSearchApp() {
             <CardTitle className="flex items-center gap-2 text-white font-bold text-2xl glow-text">
               <Shield className="h-8 w-8 text-purple-400" />
               MonadOsintSearch
-              {isFarcasterFrame && <Badge className="bg-purple-600 text-white">Farcaster Frame</Badge>}
             </CardTitle>
             <CardDescription className="text-gray-300 text-lg mt-2">
               🕷️ The First OSINT Project on Web3 - Built on Monad Testnet (1 MON per request)
@@ -632,12 +580,9 @@ export default function LeakSearchApp() {
         </Card>
 
         <Tabs defaultValue="search" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-4 bg-gray-800 border-purple-500">
+          <TabsList className="grid w-full grid-cols-3 bg-gray-800 border-purple-500">
             <TabsTrigger value="search" className="text-white data-[state=active]:bg-purple-600">
               Search
-            </TabsTrigger>
-            <TabsTrigger value="farcaster" className="text-white data-[state=active]:bg-purple-600">
-              Farcaster
             </TabsTrigger>
             <TabsTrigger value="history" className="text-white data-[state=active]:bg-purple-600">
               History
@@ -827,14 +772,6 @@ export default function LeakSearchApp() {
             )}
           </TabsContent>
 
-          <TabsContent value="farcaster">
-            <FarcasterIntegration
-              searchQuery={query}
-              searchResults={getSearchResultsCount()}
-              txHash={currentTxHash || undefined}
-            />
-          </TabsContent>
-
           <TabsContent value="history">
             <Card className="bg-gray-900 border-purple-500 shadow-xl">
               <CardHeader>
@@ -940,6 +877,22 @@ export default function LeakSearchApp() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Ссылка на Farcaster Mini App */}
+        <Card className="bg-gray-900 border-purple-500 shadow-xl">
+          <CardContent className="p-6">
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-purple-300 mb-2">Try our Farcaster Mini App!</h3>
+              <p className="text-gray-400 mb-4">Experience OSINT search directly in Warpcast</p>
+              <Button
+                onClick={() => window.open("/mini-app", "_blank")}
+                className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200 transform hover:scale-105"
+              >
+                Open Mini App
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )
