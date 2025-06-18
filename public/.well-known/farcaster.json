@@ -6,13 +6,13 @@
   },
   "frame": {
     "version": "1",
-    "name": "Example Frame",
+    "name": "MonadOsintSearch",
     "iconUrl": "https://monad-osint.vercel.app/icon.png",
-    "homeUrl": "https://monad-osint.vercel.app",
-    "imageUrl": "https://monad-osint.vercel.app/image.png",
-    "buttonTitle": "Check this out",
+    "homeUrl": "https://monad-osint.vercel.app/mini-app",
+    "imageUrl": "https://monad-osint.vercel.app/mini-app-preview.png",
+    "buttonTitle": "Open OSINT Search",
     "splashImageUrl": "https://monad-osint.vercel.app/splash.png",
-    "splashBackgroundColor": "#eeccff",
-    "webhookUrl": "https://monad-osint.vercel.app/api/webhook"
+    "splashBackgroundColor": "#1a1a2e",
+    "webhookUrl": "https://monad-osint.vercel.app/api/farcaster-webhook"
   }
 }
