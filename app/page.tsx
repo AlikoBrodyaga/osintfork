@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Loader2, Wallet, Search, History, AlertCircle, CheckCircle, Bell, Shield } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { FarcasterIntegration } from "@/components/farcaster-integration"
+import Script from 'next/script'
 
 interface ApiResponse {
   List: Record<
@@ -523,378 +524,384 @@ export default function LeakSearchApp() {
   }
 
   return (
-    <div className="min-h-screen text-white font-mono p-4">
-      <div className="max-w-6xl mx-auto space-y-6">
-        {/* Заголовок */}
-        <Card className="bg-gray-900 border-purple-500 shadow-2xl">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-white font-bold text-2xl glow-text">
-              <Shield className="h-8 w-8 text-purple-400" />
-              MonadOsintSearch
-            </CardTitle>
-            <CardDescription className="text-gray-300 text-lg mt-2">
-              🕷️ The First OSINT Project on Web3 - Built on Monad Testnet (1 MON per request)
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                {!isConnected ? (
-                  typeof window !== "undefined" && typeof window.ethereum === "undefined" ? (
-                    <Button
-                      onClick={() => window.open("https://metamask.io/download/", "_blank")}
-                      className="bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200 transform hover:scale-105"
-                    >
-                      <Wallet className="h-4 w-4 mr-2" />
-                      Install MetaMask
-                    </Button>
+    <>
+      <div className="min-h-screen text-white font-mono p-4">
+        <div className="max-w-6xl mx-auto space-y-6">
+          {/* Заголовок */}
+          <Card className="bg-gray-900 border-purple-500 shadow-2xl">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-white font-bold text-2xl glow-text">
+                <Shield className="h-8 w-8 text-purple-400" />
+                MonadOsintSearch
+              </CardTitle>
+              <CardDescription className="text-gray-300 text-lg mt-2">
+                🕷️ The First OSINT Project on Web3 - Built on Monad Testnet (1 MON per request)
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  {!isConnected ? (
+                    typeof window !== "undefined" && typeof window.ethereum === "undefined" ? (
+                      <Button
+                        onClick={() => window.open("https://metamask.io/download/", "_blank")}
+                        className="bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200 transform hover:scale-105"
+                      >
+                        <Wallet className="h-4 w-4 mr-2" />
+                        Install MetaMask
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={connectWallet}
+                        className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200 transform hover:scale-105"
+                      >
+                        <Wallet className="h-4 w-4 mr-2" />
+                        Connect Wallet
+                      </Button>
+                    )
                   ) : (
-                    <Button
-                      onClick={connectWallet}
-                      className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200 transform hover:scale-105"
-                    >
-                      <Wallet className="h-4 w-4 mr-2" />
-                      Connect Wallet
-                    </Button>
-                  )
-                ) : (
-                  <div className="flex items-center gap-4">
-                    <Badge variant="outline" className="border-purple-500 text-purple-300 flex items-center gap-2">
-                      <CheckCircle className="h-3 w-3 text-green-500" />
-                      Connected
-                    </Badge>
-                    <span className="text-sm text-gray-400">
-                      {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
-                    </span>
-                  </div>
+                    <div className="flex items-center gap-4">
+                      <Badge variant="outline" className="border-purple-500 text-purple-300 flex items-center gap-2">
+                        <CheckCircle className="h-3 w-3 text-green-500" />
+                        Connected
+                      </Badge>
+                      <span className="text-sm text-gray-400">
+                        {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
+                      </span>
+                    </div>
+                  )}
+                  <Button
+                    onClick={toggleNotifications}
+                    variant="outline"
+                    size="sm"
+                    className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 flex items-center gap-2"
+                  >
+                    <Bell className={`h-4 w-4 ${notificationsEnabled ? "text-green-500" : "text-gray-400"}`} />
+                    {notificationsEnabled ? "Notifications On" : "Notifications Off"}
+                  </Button>
+                </div>
+                {isConnected && (
+                  <Badge className="bg-purple-600 text-white text-lg px-3 py-1">{balance.toFixed(2)} MON</Badge>
                 )}
-                <Button
-                  onClick={toggleNotifications}
-                  variant="outline"
-                  size="sm"
-                  className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 flex items-center gap-2"
-                >
-                  <Bell className={`h-4 w-4 ${notificationsEnabled ? "text-green-500" : "text-gray-400"}`} />
-                  {notificationsEnabled ? "Notifications On" : "Notifications Off"}
-                </Button>
               </div>
-              {isConnected && (
-                <Badge className="bg-purple-600 text-white text-lg px-3 py-1">{balance.toFixed(2)} MON</Badge>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        <Tabs defaultValue="search" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-4 bg-gray-800 border-purple-500">
-            <TabsTrigger value="search" className="text-white data-[state=active]:bg-purple-600">
-              Search
-            </TabsTrigger>
-            <TabsTrigger value="farcaster" className="text-white data-[state=active]:bg-purple-600">
-              Farcaster
-            </TabsTrigger>
-            <TabsTrigger value="history" className="text-white data-[state=active]:bg-purple-600">
-              History
-            </TabsTrigger>
-            <TabsTrigger value="payments" className="text-white data-[state=active]:bg-purple-600">
-              Payments
-            </TabsTrigger>
-          </TabsList>
+          <Tabs defaultValue="search" className="space-y-4">
+            <TabsList className="grid w-full grid-cols-4 bg-gray-800 border-purple-500">
+              <TabsTrigger value="search" className="text-white data-[state=active]:bg-purple-600">
+                Search
+              </TabsTrigger>
+              <TabsTrigger value="farcaster" className="text-white data-[state=active]:bg-purple-600">
+                Farcaster
+              </TabsTrigger>
+              <TabsTrigger value="history" className="text-white data-[state=active]:bg-purple-600">
+                History
+              </TabsTrigger>
+              <TabsTrigger value="payments" className="text-white data-[state=active]:bg-purple-600">
+                Payments
+              </TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="search" className="space-y-4">
-            {/* Настройки поиска */}
-            <Card className="bg-gray-900 border-purple-500 shadow-xl">
-              <CardHeader>
-                <CardTitle className="text-purple-300">Search Settings</CardTitle>
-                <CardDescription className="text-gray-400">Configure database search parameters</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="language" className="text-white">
-                      Results Language
-                    </Label>
-                    <Select value={language} onValueChange={setLanguage}>
-                      <SelectTrigger className="bg-gray-800 border-purple-500 text-white placeholder-gray-400 focus:border-purple-400">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-gray-800 border-purple-500 text-white">
-                        <SelectItem value="ru">Russian</SelectItem>
-                        <SelectItem value="en">English</SelectItem>
-                        <SelectItem value="es">Español</SelectItem>
-                        <SelectItem value="fr">Français</SelectItem>
-                      </SelectContent>
-                    </Select>
+            <TabsContent value="search" className="space-y-4">
+              {/* Настройки поиска */}
+              <Card className="bg-gray-900 border-purple-500 shadow-xl">
+                <CardHeader>
+                  <CardTitle className="text-purple-300">Search Settings</CardTitle>
+                  <CardDescription className="text-gray-400">Configure database search parameters</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="language" className="text-white">
+                        Results Language
+                      </Label>
+                      <Select value={language} onValueChange={setLanguage}>
+                        <SelectTrigger className="bg-gray-800 border-purple-500 text-white placeholder-gray-400 focus:border-purple-400">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-800 border-purple-500 text-white">
+                          <SelectItem value="ru">Russian</SelectItem>
+                          <SelectItem value="en">English</SelectItem>
+                          <SelectItem value="es">Español</SelectItem>
+                          <SelectItem value="fr">Français</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="limit" className="text-white">
+                        Search Limit (100-10000)
+                      </Label>
+                      <Input
+                        id="limit"
+                        type="number"
+                        min="100"
+                        max="10000"
+                        value={limit}
+                        onChange={(e) => setLimit(Number.parseInt(e.target.value) || 100)}
+                        className="bg-gray-800 border-purple-500 text-white placeholder-gray-400 focus:border-purple-400"
+                      />
+                    </div>
                   </div>
+                </CardContent>
+              </Card>
+
+              {/* Интерфейс поиска */}
+              <Card className="bg-gray-900 border-purple-500 shadow-xl">
+                <CardHeader>
+                  <CardTitle className="text-purple-300">Search Query</CardTitle>
+                  <CardDescription className="text-gray-400">
+                    Enter data to search. Cost: 1 MON token per request
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="limit" className="text-white">
-                      Search Limit (100-10000)
+                    <Label htmlFor="query" className="text-white">
+                      What to search?
                     </Label>
-                    <Input
-                      id="limit"
-                      type="number"
-                      min="100"
-                      max="10000"
-                      value={limit}
-                      onChange={(e) => setLimit(Number.parseInt(e.target.value) || 100)}
+                    <Textarea
+                      id="query"
+                      placeholder="Enter email, name, phone number or other data to search..."
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      rows={3}
                       className="bg-gray-800 border-purple-500 text-white placeholder-gray-400 focus:border-purple-400"
                     />
+                    <p className="text-xs text-gray-400">Examples: john.doe@email.com, +1 555 123 4567, John Smith</p>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
 
-            {/* Интерфейс поиска */}
-            <Card className="bg-gray-900 border-purple-500 shadow-xl">
-              <CardHeader>
-                <CardTitle className="text-purple-300">Search Query</CardTitle>
-                <CardDescription className="text-gray-400">
-                  Enter data to search. Cost: 1 MON token per request
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="query" className="text-white">
-                    What to search?
-                  </Label>
-                  <Textarea
-                    id="query"
-                    placeholder="Enter email, name, phone number or other data to search..."
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    rows={3}
-                    className="bg-gray-800 border-purple-500 text-white placeholder-gray-400 focus:border-purple-400"
-                  />
-                  <p className="text-xs text-gray-400">Examples: john.doe@email.com, +1 555 123 4567, John Smith</p>
-                </div>
-
-                {error && (
-                  <Alert variant="destructive" className="bg-red-900 border-red-700 text-red-100">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-                )}
-
-                <Button
-                  onClick={makeSearch}
-                  disabled={isLoading || !isConnected}
-                  className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 w-full"
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Processing payment and searching...
-                    </>
-                  ) : (
-                    <>
-                      <Search className="mr-2 h-4 w-4" />
-                      🕷️ Search Web (1 MON)
-                    </>
+                  {error && (
+                    <Alert variant="destructive" className="bg-red-900 border-red-700 text-red-100">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>{error}</AlertDescription>
+                    </Alert>
                   )}
-                </Button>
-                {apiResponse && (
-                  <Button
-                    onClick={() => {
-                      console.log("📊 Текущие результаты:", apiResponse)
-                      alert(
-                        `Найдено результатов в ${Object.keys(apiResponse.List).length} базах данных. Смотрите консоль браузера (F12) для подробностей.`,
-                      )
-                    }}
-                    variant="outline"
-                    className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 w-full mt-2 border-purple-500"
-                  >
-                    📋 Show results in console
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
 
-            {/* Статус оплаты */}
-            {currentTxHash && (
+                  <Button
+                    onClick={makeSearch}
+                    disabled={isLoading || !isConnected}
+                    className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 w-full"
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Processing payment and searching...
+                      </>
+                    ) : (
+                      <>
+                        <Search className="mr-2 h-4 w-4" />
+                        🕷️ Search Web (1 MON)
+                      </>
+                    )}
+                  </Button>
+                  {apiResponse && (
+                    <Button
+                      onClick={() => {
+                        console.log("📊 Текущие результаты:", apiResponse)
+                        alert(
+                          `Найдено результатов в ${Object.keys(apiResponse.List).length} базах данных. Смотрите консоль браузера (F12) для подробностей.`,
+                        )
+                      }}
+                      variant="outline"
+                      className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 w-full mt-2 border-purple-500"
+                    >
+                      📋 Show results in console
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Статус оплаты */}
+              {currentTxHash && (
+                <Card className="bg-gray-900 border-purple-500 shadow-xl">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-purple-300">
+                      <Loader2 className="h-4 w-4 animate-spin text-purple-400" />
+                      Payment Processing
+                    </CardTitle>
+                    <CardDescription className="text-gray-400">
+                      Transaction: {currentTxHash.slice(0, 10)}...{currentTxHash.slice(-8)}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Alert className="bg-purple-900 border-purple-700">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription className="text-purple-100">
+                        Your payment is being processed on the Monad testnet. This may take a few minutes.
+                      </AlertDescription>
+                    </Alert>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Результаты */}
+              {apiResponse && (
+                <Card className="bg-gray-900 border-purple-500 shadow-xl">
+                  <CardHeader>
+                    <CardTitle className="text-purple-300">Search Results</CardTitle>
+                    <CardDescription className="text-gray-400">
+                      Data found in {Object.keys(apiResponse.List).length} database(s)
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {Object.entries(apiResponse.List).map(([dbName, dbData]) => (
+                        <Card
+                          key={dbName}
+                          className="bg-gray-900 border-purple-500 shadow-xl border-l-4 border-l-purple-500"
+                        >
+                          <CardHeader>
+                            <CardTitle className="text-lg text-purple-300">{dbName}</CardTitle>
+                            <CardDescription className="text-gray-400">{dbData.InfoLeak}</CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            {dbData.Data && dbData.Data.length > 0 ? (
+                              <div className="space-y-2">
+                                {dbData.Data.slice(0, 5).map((item, index) => (
+                                  <div key={index} className="p-3 bg-gray-800 rounded-lg border border-purple-600">
+                                    {Object.entries(item).map(([key, value]) => (
+                                      <div key={key} className="flex justify-between">
+                                        <span className="font-medium text-purple-300">{key}:</span>
+                                        <span className="text-gray-300">{String(value)}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                ))}
+                                {dbData.Data.length > 5 && (
+                                  <p className="text-sm text-gray-400">... и ещё {dbData.Data.length - 5} результатов</p>
+                                )}
+                              </div>
+                            ) : (
+                              <p className="text-gray-400">No data found in this database</p>
+                            )}
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </TabsContent>
+
+            <TabsContent value="farcaster">
+              <FarcasterIntegration
+                searchQuery={query}
+                searchResults={getSearchResultsCount()}
+                txHash={currentTxHash || undefined}
+              />
+            </TabsContent>
+
+            <TabsContent value="history">
               <Card className="bg-gray-900 border-purple-500 shadow-xl">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-purple-300">
-                    <Loader2 className="h-4 w-4 animate-spin text-purple-400" />
-                    Payment Processing
+                    <History className="h-5 w-5" />
+                    Request History
                   </CardTitle>
                   <CardDescription className="text-gray-400">
-                    Transaction: {currentTxHash.slice(0, 10)}...{currentTxHash.slice(-8)}
+                    Просмотр ваших предыдущих поисковых запросов
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Alert className="bg-purple-900 border-purple-700">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription className="text-purple-100">
-                      Your payment is being processed on the Monad testnet. This may take a few minutes.
-                    </AlertDescription>
-                  </Alert>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Результаты */}
-            {apiResponse && (
-              <Card className="bg-gray-900 border-purple-500 shadow-xl">
-                <CardHeader>
-                  <CardTitle className="text-purple-300">Search Results</CardTitle>
-                  <CardDescription className="text-gray-400">
-                    Data found in {Object.keys(apiResponse.List).length} database(s)
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {Object.entries(apiResponse.List).map(([dbName, dbData]) => (
-                      <Card
-                        key={dbName}
-                        className="bg-gray-900 border-purple-500 shadow-xl border-l-4 border-l-purple-500"
-                      >
-                        <CardHeader>
-                          <CardTitle className="text-lg text-purple-300">{dbName}</CardTitle>
-                          <CardDescription className="text-gray-400">{dbData.InfoLeak}</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          {dbData.Data && dbData.Data.length > 0 ? (
-                            <div className="space-y-2">
-                              {dbData.Data.slice(0, 5).map((item, index) => (
-                                <div key={index} className="p-3 bg-gray-800 rounded-lg border border-purple-600">
-                                  {Object.entries(item).map(([key, value]) => (
-                                    <div key={key} className="flex justify-between">
-                                      <span className="font-medium text-purple-300">{key}:</span>
-                                      <span className="text-gray-300">{String(value)}</span>
-                                    </div>
-                                  ))}
-                                </div>
-                              ))}
-                              {dbData.Data.length > 5 && (
-                                <p className="text-sm text-gray-400">... и ещё {dbData.Data.length - 5} результатов</p>
+                  {requestHistory.length === 0 ? (
+                    <p className="text-gray-400 text-center py-8">No requests made yet</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {requestHistory
+                        .slice()
+                        .reverse()
+                        .map((request) => (
+                          <div
+                            key={request.id}
+                            className="flex items-center justify-between p-3 border border-purple-600 rounded-lg bg-gray-800"
+                          >
+                            <div className="flex-1">
+                              <p className="font-medium text-white">{request.query}</p>
+                              <p className="text-sm text-gray-400">
+                                {new Date(request.timestamp).toLocaleString("ru-RU")}
+                              </p>
+                              {request.errorMessage && (
+                                <p className="text-xs text-red-500 mt-1">{request.errorMessage}</p>
                               )}
                             </div>
-                          ) : (
-                            <p className="text-gray-400">No data found in this database</p>
-                          )}
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
+                            <div className="flex items-center gap-3">
+                              <Badge
+                                className="bg-purple-600 text-white"
+                                variant={request.status === "success" ? "default" : "destructive"}
+                              >
+                                {request.results} results
+                              </Badge>
+                              <Badge variant="outline" className="border-purple-500 text-purple-300">
+                                {request.cost} MON
+                              </Badge>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
-            )}
-          </TabsContent>
+            </TabsContent>
 
-          <TabsContent value="farcaster">
-            <FarcasterIntegration
-              searchQuery={query}
-              searchResults={getSearchResultsCount()}
-              txHash={currentTxHash || undefined}
-            />
-          </TabsContent>
-
-          <TabsContent value="history">
-            <Card className="bg-gray-900 border-purple-500 shadow-xl">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-purple-300">
-                  <History className="h-5 w-5" />
-                  Request History
-                </CardTitle>
-                <CardDescription className="text-gray-400">
-                  Просмотр ваших предыдущих поисковых запросов
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {requestHistory.length === 0 ? (
-                  <p className="text-gray-400 text-center py-8">No requests made yet</p>
-                ) : (
-                  <div className="space-y-3">
-                    {requestHistory
-                      .slice()
-                      .reverse()
-                      .map((request) => (
-                        <div
-                          key={request.id}
-                          className="flex items-center justify-between p-3 border border-purple-600 rounded-lg bg-gray-800"
-                        >
-                          <div className="flex-1">
-                            <p className="font-medium text-white">{request.query}</p>
-                            <p className="text-sm text-gray-400">
-                              {new Date(request.timestamp).toLocaleString("ru-RU")}
-                            </p>
-                            {request.errorMessage && (
-                              <p className="text-xs text-red-500 mt-1">{request.errorMessage}</p>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-3">
+            <TabsContent value="payments">
+              <Card className="bg-gray-900 border-purple-500 shadow-xl">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-purple-300">
+                    <Wallet className="h-5 w-5" />
+                    Payment History
+                  </CardTitle>
+                  <CardDescription className="text-gray-400">Просмотр ваших блокчейн транзакций</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {paymentHistory.length === 0 ? (
+                    <p className="text-gray-400 text-center py-8">No payments made yet</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {paymentHistory
+                        .slice()
+                        .reverse()
+                        .map((payment) => (
+                          <div
+                            key={payment.id}
+                            className="flex items-center justify-between p-3 border border-purple-600 rounded-lg bg-gray-800"
+                          >
+                            <div className="flex-1">
+                              <p className="font-medium text-white">{payment.amount} MON</p>
+                              <p className="text-sm text-gray-400">
+                                {new Date(payment.timestamp).toLocaleString("ru-RU")}
+                              </p>
+                              <p className="text-xs text-gray-400 font-mono">{payment.txHash}</p>
+                            </div>
                             <Badge
                               className="bg-purple-600 text-white"
-                              variant={request.status === "success" ? "default" : "destructive"}
+                              variant={
+                                payment.status === "confirmed"
+                                  ? "default"
+                                  : payment.status === "pending"
+                                    ? "secondary"
+                                    : "destructive"
+                              }
                             >
-                              {request.results} results
-                            </Badge>
-                            <Badge variant="outline" className="border-purple-500 text-purple-300">
-                              {request.cost} MON
-                            </Badge>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="payments">
-            <Card className="bg-gray-900 border-purple-500 shadow-xl">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-purple-300">
-                  <Wallet className="h-5 w-5" />
-                  Payment History
-                </CardTitle>
-                <CardDescription className="text-gray-400">Просмотр ваших блокчейн транзакций</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {paymentHistory.length === 0 ? (
-                  <p className="text-gray-400 text-center py-8">No payments made yet</p>
-                ) : (
-                  <div className="space-y-3">
-                    {paymentHistory
-                      .slice()
-                      .reverse()
-                      .map((payment) => (
-                        <div
-                          key={payment.id}
-                          className="flex items-center justify-between p-3 border border-purple-600 rounded-lg bg-gray-800"
-                        >
-                          <div className="flex-1">
-                            <p className="font-medium text-white">{payment.amount} MON</p>
-                            <p className="text-sm text-gray-400">
-                              {new Date(payment.timestamp).toLocaleString("ru-RU")}
-                            </p>
-                            <p className="text-xs text-gray-400 font-mono">{payment.txHash}</p>
-                          </div>
-                          <Badge
-                            className="bg-purple-600 text-white"
-                            variant={
-                              payment.status === "confirmed"
-                                ? "default"
+                              {payment.status === "confirmed"
+                                ? "confirmed"
                                 : payment.status === "pending"
-                                  ? "secondary"
-                                  : "destructive"
-                            }
-                          >
-                            {payment.status === "confirmed"
-                              ? "confirmed"
-                              : payment.status === "pending"
-                                ? "pending"
-                                : "failed"}
-                          </Badge>
-                        </div>
-                      ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                                  ? "pending"
+                                  : "failed"}
+                            </Badge>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
-    </div>
+      <Script src="https://cdn.jsdelivr.net/npm/@farcaster/frame-sdk/dist/index.min.js" strategy="afterInteractive" />
+      <Script id="farcaster-ready" strategy="afterInteractive">
+        {`frame.sdk.actions.ready();`}
+      </Script>
+    </>
   )
 }
