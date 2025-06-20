@@ -1,7 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 
 // Use environment variable for bot token with fallback
-const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || "5592031950:AAHdqTcvCH1vGWJxfSeofSAs0K5PALDsaw"
 const TELEGRAM_API_URL = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`
 
 // Use environment variable for chat ID
