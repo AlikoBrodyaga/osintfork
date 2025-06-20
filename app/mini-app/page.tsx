@@ -1,4 +1,16 @@
-"use client"
+export const metadata = {
+  title: "Monad OSINT",
+  openGraph: {
+    title: "Monad OSINT Search",
+    images: ["https://monad-osint.vercel.app/your-frame-image.png"], // укажи актуальный URL!
+  },
+  other: {
+    "fc:frame": "vNext",
+    "fc:frame:image": "https://monad-osint.vercel.app/your-frame-image.png", // реальный путь к PNG/JPEG/WEBP
+    "fc:frame:post_url": "https://monad-osint.vercel.app/api/frame", // или твой endpoint
+    "fc:frame:button:1": "Запустить поиск",
+  },
+};
 
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -10,9 +22,6 @@ import { Badge } from "@/components/ui/badge"
 import { Loader2, Search, AlertCircle, CheckCircle, Shield } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Script from "next/script"
-import { sdk } from "@farcaster/frame-sdk"
-
-sdk.actions.ready()
 
 const appUrl = "https://monad-osint.vercel.app";
 
