@@ -1,0 +1,20 @@
+{
+  "frame": {
+    "name": "MonadOsint",
+    "version": "1",
+    "iconUrl": "https://monad-osint.vercel.app/icon.png",
+    "homeUrl": "https://monad-osint.vercel.app",
+    "imageUrl": "https://monad-osint.vercel.app/image.png",
+    "splashImageUrl": "https://monad-osint.vercel.app/splash.png",
+    "splashBackgroundColor": "#1a1a2e",
+    "webhookUrl": "https://monad-osint.vercel.app/api/webhook",
+    "subtitle": "monad-osint tools",
+    "description": "search capabilities with my newly updated tool! Now even more features: easily search by email, phone number, name, nickname, car plate, VIN, IP address, and more",
+    "primaryCategory": "utility"
+  },
+  "accountAssociation": {
+    "header": "eyJmaWQiOjEwOTk3MzcsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgxYzY1QTY4MEM5NDBkNTE5NDExQjUwNzRFMjYxYkVlNDkxNmQ3NDgwIn0",
+    "payload": "eyJkb21haW4iOiJtb25hZC1vc2ludC52ZXJjZWwuYXBwIn0",
+    "signature": "MHhhMjQ0YzFjZWExZThkNzU4NjQ1MGIwY2ZkZjE3ZDI1ZWE2OThmN2I1NjZkZjI3YmJkOGNiZjhjMjZmZWM2MjZkMWFlMDVlYzkzYjg0MGNmY2QwMjVhN2Y5NDFjODAzYmE2ZmJkNjQwMDFmOTg0YWIyZmVkNjQwZTBlYjJlM2QwZjFj"
+  }
+}
