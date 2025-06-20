@@ -10,6 +10,9 @@ import { Badge } from "@/components/ui/badge"
 import { Loader2, Search, AlertCircle, CheckCircle, Shield } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Script from "next/script"
+import { sdk } from "@farcaster/frame-sdk"
+
+sdk.actions.ready()
 
 const appUrl = "https://monad-osint.vercel.app";
 
