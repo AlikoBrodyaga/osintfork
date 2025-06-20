@@ -11,6 +11,23 @@ import { Loader2, Search, AlertCircle, CheckCircle, Shield } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Script from "next/script"
 
+const appUrl = "https://monad-osint.vercel.app";
+
+const frame = {
+  version: "next",
+  imageUrl: `${appUrl}/images/feed.png`,
+  button: {
+    title: "Launch Template",
+    action: {
+      type: "launch_frame",
+      name: "Monad Farcaster MiniApp Template",
+      url: appUrl,
+      splashImageUrl: `${appUrl}/images/splash.png`, // App icon in the splash screen (200px * 200px)
+      splashBackgroundColor: "#f7f7f7", // Splash screen background color
+    },
+  },
+};
+
 interface ApiResponse {
   List: Record<
     string,
@@ -167,6 +184,10 @@ export default function FarcasterMiniApp() {
     setIsLoading(true)
 
     try {
+      if (!window.ethereum) {
+        throw new Error("MetaMask не найден")
+      }
+
       // Отправляем транзакцию
       const txHash = await window.ethereum.request({
         method: "eth_sendTransaction",
