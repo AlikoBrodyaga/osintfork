@@ -1,18 +1,18 @@
 {
   "accountAssociation": {
     "header": "eyJmaWQiOjEwOTk3MzcsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgxYzY1QTY4MEM5NDBkNTE5NDExQjUwNzRFMjYxYkVlNDkxNmQ3NDgwIn0",
-    "payload": "eyJkb21haW4iOiJtb25hZC1vc2ludC52ZXJjZWwuYXBwIn0",
-    "signature": "MHhhMjQ0YzFjZWExZThkNzU4NjQ1MGIwY2ZkZjE3ZDI1ZWE2OThmN2I1NjZkZjI3YmJkOGNiZjhjMjZmZWM2MjZkMWFIMDVlYzkzYjg0MGNmY2QwMjVhN2Y5NDFjODAzYmE2ZmJkNjQwMDFmOTg0YWIyZmVkNjQwZTBlYjJlM2QwZjFj"
+    "payload": "eyJkb21haW4iOiJtb25hZC1vc2ludC52ZXJjZWwuYXBweSJ9",
+    "signature": "MHgwZGI5ZWRjOTgzNTAyNjk1OGJkMTRmZDI5ZmFjZTAwZGFiNjY0MTliZjM1NzEwN2YwZGMwZmY3MDlhMTI4NDYwMGM3YzY1ODQ0NjFmNzhiMGJmZjRkNmNiOTZkNThkZWJhMDg0NzA4YzI3MzBhODdlNGJlNDBjOTVmN2I5M2YzMTFj"
   },
   "frame": {
     "version": "1",
-    "name": "MonadOsintSearch",
-    "iconUrl": "https://monad-osint.vercel.app/icon.png",
-    "homeUrl": "https://monad-osint.vercel.app/mini-app",
-    "imageUrl": "https://monad-osint.vercel.app/mini-app-preview.png",
-    "buttonTitle": "Open OSINT Search",
-    "splashImageUrl": "https://monad-osint.vercel.app/splash.png",
-    "splashBackgroundColor": "#1a1a2e",
-    "webhookUrl": "https://monad-osint.vercel.app/api/farcaster-webhook"
+    "name": "Example Frame",
+    "iconUrl": "https://monad-osint.vercel.appy/icon.png",
+    "homeUrl": "https://monad-osint.vercel.appy",
+    "imageUrl": "https://monad-osint.vercel.appy/image.png",
+    "buttonTitle": "Check this out",
+    "splashImageUrl": "https://monad-osint.vercel.appy/splash.png",
+    "splashBackgroundColor": "#eeccff",
+    "webhookUrl": "https://monad-osint.vercel.appy/api/webhook"
   }
 }
