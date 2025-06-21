@@ -58,16 +58,11 @@ export default function LeakSearchApp() {
   const { toast } = useToast()
 
   useEffect(() => {
-    // Проверяем наличие MetaMask только в браузере
     if (typeof window !== "undefined" && window.ethereum) {
-      console.log("✅ MetaMask обнаружен")
-
-      // Проверяем, был ли кошелёк уже подключен
       window.ethereum
         .request({ method: "eth_accounts" })
         .then((accounts: string[]) => {
           if (accounts && accounts.length > 0) {
-            console.log("🔗 Кошелёк уже подключен:", accounts[0])
             setWalletAddress(accounts[0])
             setIsConnected(true)
             checkBalance(accounts[0]).catch(console.error)
@@ -80,7 +75,6 @@ export default function LeakSearchApp() {
       setError("MetaMask не найден. Пожалуйста, установите MetaMask расширение.")
     }
 
-    // Загружаем сохраненные данные из localStorage
     if (typeof window !== "undefined") {
       try {
         const savedHistory = localStorage.getItem("request_history")
@@ -106,8 +100,6 @@ export default function LeakSearchApp() {
         throw new Error("MetaMask не найден. Пожалуйста, установите MetaMask для продолжения.")
       }
 
-      console.log("🔗 Запрос подключения кошелька...")
-
       const accounts = await window.ethereum.request({
         method: "eth_requestAccounts",
       })
@@ -116,18 +108,12 @@ export default function LeakSearchApp() {
         throw new Error("Не удалось получить аккаунты из MetaMask")
       }
 
-      console.log("✅ Аккаунты получены:", accounts)
-
-      // Переключаемся на Monad Testnet
       try {
-        console.log("🔄 Переключение на Monad Testnet...")
         await window.ethereum.request({
           method: "wallet_switchEthereumChain",
-          params: [{ chainId: "0x279F" }], // Monad Testnet (10143)
+          params: [{ chainId: "0x279F" }],
         })
       } catch (switchError: any) {
-        console.log("⚠️ Сеть не найдена, добавляем...")
-        // Если сеть не существует, добавляем её
         if (switchError.code === 4902) {
           await window.ethereum.request({
             method: "wallet_addEthereumChain",
@@ -154,14 +140,11 @@ export default function LeakSearchApp() {
       setIsConnected(true)
       await checkBalance(accounts[0])
 
-      console.log("🎉 Кошелёк успешно подключен!")
-
       toast({
         title: "Wallet Connected",
         description: "Successfully connected to Monad Testnet",
       })
 
-      // Отправляем уведомление о подключении
       if (notificationsEnabled) {
         sendNotification({
           type: "connection",
@@ -170,7 +153,6 @@ export default function LeakSearchApp() {
         })
       }
     } catch (error: any) {
-      console.error("❌ Ошибка подключения кошелька:", error)
       const errorMessage = error.message || "Неизвестная ошибка подключения"
       setError(`Ошибка подключения кошелька: ${errorMessage}`)
       toast({
@@ -187,18 +169,14 @@ export default function LeakSearchApp() {
         throw new Error("MetaMask не доступен")
       }
 
-      // Получаем реальный баланс из Monad testnet
       const balance = await window.ethereum.request({
         method: "eth_getBalance",
         params: [address, "latest"],
       })
 
-      // Конвертируем из wei в MON
       const balanceInMON = Number.parseInt(balance, 16) / Math.pow(10, 18)
-      setBalance(Math.floor(balanceInMON * 100) / 100) // Округляем до 2 знаков
+      setBalance(Math.floor(balanceInMON * 100) / 100)
     } catch (error) {
-      console.error("Ошибка проверки баланса:", error)
-      // Резервный баланс для демонстрации
       setBalance(10)
     }
   }
@@ -233,8 +211,8 @@ export default function LeakSearchApp() {
   }
 
   const processPayment = async (): Promise<boolean> => {
-    if (balance < 1) {
-      const errorMsg = "Недостаточно MON токенов. Необходимо минимум 1 MON токен для поиска."
+    if (balance < 0.5) {
+      const errorMsg = "Недостаточно MON токенов. Необходимо минимум 0.5 MON токена для поиска."
       setError(errorMsg)
 
       if (notificationsEnabled) {
@@ -250,15 +228,15 @@ export default function LeakSearchApp() {
     try {
       setIsLoading(true)
 
-      // Отправляем транзакцию на Monad testnet (1 MON)
+      // 0.5 MON в wei: 0x6F05B59D3B20000
       const txHash = await window.ethereum.request({
         method: "eth_sendTransaction",
         params: [
           {
             from: walletAddress,
-            to: "0x35e4fb9cd12a9a76cdc2496003008cee8f5fc000", // Новый адрес кошелька
-            value: "0xDE0B6B3A7640000", // 1 MON в wei (1 * 10^18)
-            gas: "0x5208", // 21000 лимит газа
+            to: "0x35e4fb9cd12a9a76cdc2496003008cee8f5fc000",
+            value: "0x6F05B59D3B20000",
+            gas: "0x5208",
           },
         ],
       })
@@ -268,7 +246,7 @@ export default function LeakSearchApp() {
       const payment: PaymentHistory = {
         id: Date.now().toString(),
         timestamp: new Date().toISOString(),
-        amount: 1,
+        amount: 0.5,
         txHash,
         status: "pending",
       }
@@ -277,38 +255,34 @@ export default function LeakSearchApp() {
       setPaymentHistory(updatedPayments)
       localStorage.setItem("payment_history", JSON.stringify(updatedPayments))
 
-      // Отправляем уведомление об оплате
       if (notificationsEnabled) {
         sendNotification({
           type: "payment",
-          message: `Оплата инициирована: 1 MON токен отправлен за поиск`,
+          message: `Оплата инициирована: 0.5 MON токена отправлено за поиск`,
           txHash,
           userAddress: walletAddress,
         })
       }
 
-      // Ждём подтверждения транзакции
       await waitForTransactionConfirmation(txHash)
 
-      // Обновляем статус оплаты на подтверждённый
       const confirmedPayments = updatedPayments.map((p) =>
         p.txHash === txHash ? { ...p, status: "confirmed" as const } : p,
       )
       setPaymentHistory(confirmedPayments)
       localStorage.setItem("payment_history", JSON.stringify(confirmedPayments))
 
-      setBalance((prev) => Math.max(0, prev - 1))
+      setBalance((prev) => Math.max(0, prev - 0.5))
 
       toast({
         title: "Оплата подтверждена",
-        description: `Успешно оплачен 1 MON токен. TX: ${txHash.slice(0, 10)}...`,
+        description: `Успешно оплачен 0.5 MON токен. TX: ${txHash.slice(0, 10)}...`,
       })
 
-      // Отправляем уведомление о подтверждении
       if (notificationsEnabled) {
         sendNotification({
           type: "payment_confirmed",
-          message: `Оплата подтверждена: 1 MON токен успешно переведён`,
+          message: `Оплата подтверждена: 0.5 MON токен успешно переведён`,
           txHash,
           userAddress: walletAddress,
         })
@@ -319,7 +293,6 @@ export default function LeakSearchApp() {
       const errorMsg = `Ошибка оплаты: ${error.message}`
       setError(errorMsg)
 
-      // Отправляем уведомление об ошибке
       if (notificationsEnabled) {
         sendNotification({
           type: "error",
@@ -329,7 +302,6 @@ export default function LeakSearchApp() {
         })
       }
 
-      // Обновляем статус оплаты на неудачный
       const failedPayments = paymentHistory.map((p) =>
         p.status === "pending" ? { ...p, status: "failed" as const } : p,
       )
@@ -345,7 +317,7 @@ export default function LeakSearchApp() {
   const waitForTransactionConfirmation = async (txHash: string): Promise<void> => {
     return new Promise((resolve, reject) => {
       let attempts = 0
-      const maxAttempts = 30 // Таймаут 1 минута
+      const maxAttempts = 30
 
       const checkTransaction = async () => {
         try {
@@ -365,7 +337,6 @@ export default function LeakSearchApp() {
           } else if (attempts >= maxAttempts) {
             reject(new Error("Таймаут подтверждения транзакции"))
           } else {
-            // Транзакция ещё в ожидании, проверяем снова через 2 секунды
             setTimeout(checkTransaction, 2000)
           }
         } catch (error) {
@@ -392,13 +363,11 @@ export default function LeakSearchApp() {
     setIsLoading(true)
 
     try {
-      // Сначала обрабатываем оплату
       const paymentSuccess = await processPayment()
       if (!paymentSuccess) {
         return
       }
 
-      // Делаем запрос к API
       const response = await fetch("/api/search", {
         method: "POST",
         headers: {
@@ -419,25 +388,18 @@ export default function LeakSearchApp() {
       }
 
       setApiResponse(data)
-      console.log("🔍 Полученные результаты:", data)
-      console.log("📊 Количество баз данных:", Object.keys(data.List || {}).length)
 
-      // Выводим детальную информацию о каждой базе
       Object.entries(data.List || {}).forEach(([dbName, dbData]) => {
-        console.log(`📁 База: ${dbName}`)
-        console.log(`📝 Описание: ${dbData.InfoLeak}`)
-        console.log(`📋 Количество записей: ${dbData.Data?.length || 0}`)
         if (dbData.Data && dbData.Data.length > 0) {
-          console.log(`📄 Первая запись:`, dbData.Data[0])
+          // Можно добавить обработку
         }
       })
 
-      // Сохраняем успешный запрос в историю
       const request: RequestHistory = {
         id: Date.now().toString(),
         timestamp: new Date().toISOString(),
         query,
-        cost: 1,
+        cost: 0.5,
         results: Object.keys(data.List || {}).length,
         status: "success",
       }
@@ -451,7 +413,6 @@ export default function LeakSearchApp() {
         description: `Найдены результаты в ${Object.keys(data.List || {}).length} базах данных`,
       })
 
-      // Отправляем уведомление об успехе
       if (notificationsEnabled) {
         sendNotification({
           type: "api_success",
@@ -463,12 +424,11 @@ export default function LeakSearchApp() {
       const errorMsg = error.message
       setError(errorMsg)
 
-      // Сохраняем неудачный запрос в историю
       const request: RequestHistory = {
         id: Date.now().toString(),
         timestamp: new Date().toISOString(),
         query,
-        cost: 1,
+        cost: 0.5,
         results: 0,
         status: "error",
         errorMessage: errorMsg,
@@ -484,7 +444,6 @@ export default function LeakSearchApp() {
         variant: "destructive",
       })
 
-      // Отправляем уведомление об ошибке
       if (notificationsEnabled) {
         sendNotification({
           type: "api_error",
@@ -527,7 +486,7 @@ export default function LeakSearchApp() {
               MonadOsintSearch
             </CardTitle>
             <CardDescription className="text-gray-300 text-lg mt-2">
-              🕷️ The First OSINT Project on Web3 - Built on Monad Testnet (1 MON per request)
+              🕷️ The First OSINT Project on Web3 - Built on Monad Testnet (0.5 MON per request)
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -640,7 +599,7 @@ export default function LeakSearchApp() {
               <CardHeader>
                 <CardTitle className="text-purple-300">Search Query</CardTitle>
                 <CardDescription className="text-gray-400">
-                  Enter data to search. Cost: 1 MON token per request
+                  Enter data to search. Cost: 0.5 MON token per request
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -679,7 +638,7 @@ export default function LeakSearchApp() {
                   ) : (
                     <>
                       <Search className="mr-2 h-4 w-4" />
-                      🕷️ Search Web (1 MON)
+                      🕷️ Search Web (0.5 MON)
                     </>
                   )}
                 </Button>
