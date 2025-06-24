@@ -1,18 +1,21 @@
 {
-  "accountAssociation": {
-    "header": "eyJmaWQiOjEwOTk3MzcsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgxYzY1QTY4MEM5NDBkNTE5NDExQjUwNzRFMjYxYkVlNDkxNmQ3NDgwIn0",
-    "payload": "eyJkb21haW4iOiJtb25hZC1vc2ludC52ZXJjZWwuYXBwIn0",
-    "signature": "MHhhMjQ0YzFjZWExZThkNzU4NjQ1MGIwY2ZkZjE3ZDI1ZWE2OThmN2I1NjZkZjI3YmJkOGNiZjhjMjZmZWM2MjZkMWFIMDVlYzkzYjg0MGNmY2QwMjVhN2Y5NDFjODAzYmE2ZmJkNjQwMDFmOTg0YWIyZmVkNjQwZTBlYjJlM2QwZjFj"
-  },
   "frame": {
+    "name": "MONIOSINT",
     "version": "1",
-    "name": "MonadOsintSearch",
-    "iconUrl": "https://monad-osint.vercel.app/icon.png",
-    "homeUrl": "https://monad-osint.vercel.app/mini-app",
-    "imageUrl": "https://monad-osint.vercel.app/mini-app-preview.png",
-    "buttonTitle": "Open OSINT Search",
-    "splashImageUrl": "https://monad-osint.vercel.app/splash.png",
-    "splashBackgroundColor": "#1a1a2e",
-    "webhookUrl": "https://monad-osint.vercel.app/api/farcaster-webhook"
+    "iconUrl": "https://v0-osintforkmain22.vercel.app/mini-app/icon.png",
+    "homeUrl": "https://v0-osintforkmain22.vercel.app/mini-app",
+    "imageUrl": "https://v0-osintforkmain22.vercel.app/mini-app/image.png",
+    "buttonTitle": "MINIOSINT",
+    "splashImageUrl": "https://v0-osintforkmain22.vercel.app/mini-app/splash.png",
+    "splashBackgroundColor": "#131313",
+    "webhookUrl": "https://v0-osintforkmain22.vercel.app/mini-app/api/webhook",
+    "primaryCategory": "social",
+    "description": "mini osint",
+    "subtitle": "https://v0-osintforkmain22.vercel.app/mini-app"
+  },
+  "accountAssociation": {
+    "header": "eyJmaWQiOjEwOTk3MzcsInR5cGUiOiJhdXRoIiwia2V5IjoiMHg1RTlFNTBCY2JmMjA1MmEzOUExNmE4RGFjRUIyMWE3MjZBODVGQTRCIn0",
+    "payload": "eyJkb21haW4iOiJodHRwczovL3YwLW9zaW50Zm9ya21haW4yMi52ZXJjZWwuYXBwL21pbmktYXBwIn0",
+    "signature": "LwTnvXnCS0mAagXhxDs2juL9Y+f11o06JWCtBTwei0YZnHbo5MNKu/9NRbwdOCAUa1kS2LzI/kJ03DDYCBQHxxw="
   }
 }
